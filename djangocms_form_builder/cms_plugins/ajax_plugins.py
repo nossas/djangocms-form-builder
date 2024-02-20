@@ -124,9 +124,11 @@ class AjaxFormMixin(FormMixin):
                     key + str(self.instance.id): value
                     for key, value in form.errors.items()
                 },
-                "html": form.render(context=csrf(self.request))
-                if hasattr(form, "render")
-                else "",  # Kills reCAPTCHA
+                "html": (
+                    form.render(context=csrf(self.request))
+                    if hasattr(form, "render")
+                    else ""
+                ),  # Kills reCAPTCHA
             }
         )
 
@@ -237,11 +239,13 @@ class CMSAjaxForm(AjaxFormMixin, CMSAjaxBase):
         form = self.get_ajax_form()
         context.update(self.set_context(context, instance, placeholder))
         context["form_counter"] = context.get("form_counter", 0) + 1
-        context.update({
-            "instance": instance,
-            "form": form,
-            "uid": f"{instance.id}{getattr(form, 'slug', '')}-{context['form_counter']}",
-        })
+        context.update(
+            {
+                "instance": instance,
+                "form": form,
+                "uid": f"{instance.id}{getattr(form, 'slug', '')}-{context['form_counter']}",
+            }
+        )
         return context
 
 
@@ -254,6 +258,20 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
     render_template = f"djangocms_form_builder/{settings.framework}/form.html"
     change_form_template = "djangocms_frontend/admin/base.html"
     allow_children = True
+    child_classes = [
+        "BooleanFieldPlugin",
+        "CharFieldPlugin",
+        "ChoicePlugin",
+        "DateFieldPlugin",
+        "DateTimeFieldPlugin",
+        "DecimalFieldPlugin",
+        "EmailFieldPlugin",
+        "IntegerFieldPlugin",
+        "SelectPlugin",
+        "TextareaPlugin",
+        "TimeFieldPlugin",
+        "URLFieldPlugin",
+    ]
 
     fieldsets = [
         (
@@ -287,7 +305,9 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
-        if obj is None or not obj.form_selection:  # No Actions if a Django form has been selected
+        if (
+            obj is None or not obj.form_selection
+        ):  # No Actions if a Django form has been selected
             fieldsets = insert_fields(
                 fieldsets,
                 ("form_actions",),
@@ -303,17 +323,19 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
                 block=None,
                 position=1,
                 blockname=_("Captcha"),
-                blockattrs={}
-                if recaptcha.keys_available
-                else dict(
-                    description=mark_safe_lazy(
-                        _(
-                            '<blockquote style="color: var(--error-fg);">Please get a public and secret '
-                            'key from <a href="{key_link}" target="_blank">Google</a> '
-                            "and ensure that they are available through django settings "
-                            "<code>RECAPTCHA_PUBLIC_KEY</code> and <code>RECAPTCHA_PRIVATE_KEY</code>. "
-                            "Without these keys captcha protection will not work.</blockquote>"
-                        ).format(key_link="https://developers.google.com/recaptcha")
+                blockattrs=(
+                    {}
+                    if recaptcha.keys_available
+                    else dict(
+                        description=mark_safe_lazy(
+                            _(
+                                '<blockquote style="color: var(--error-fg);">Please get a public and secret '
+                                'key from <a href="{key_link}" target="_blank">Google</a> '
+                                "and ensure that they are available through django settings "
+                                "<code>RECAPTCHA_PUBLIC_KEY</code> and <code>RECAPTCHA_PRIVATE_KEY</code>. "
+                                "Without these keys captcha protection will not work.</blockquote>"
+                            ).format(key_link="https://developers.google.com/recaptcha")
+                        )
                     )
                 ),
             )
@@ -359,22 +381,28 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
         meta_options = dict(form_name=self.instance.form_name)
         if self.instance.form_floating_labels:
             meta_options["floating_labels"] = True
-        meta_options[
-            "field_sep"
-        ] = f'{self.instance.form_spacing}'
-        meta_options[
-            "redirect"
-        ] = self.instance.placeholder.page  # Default behavior: redirect to same page
+        meta_options["field_sep"] = f"{self.instance.form_spacing}"
+        meta_options["redirect"] = (
+            self.instance.placeholder.page
+        )  # Default behavior: redirect to same page
         meta_options["login_required"] = self.instance.form_login_required
         meta_options["unique"] = self.instance.form_unique
         form_actions = self.instance.form_actions or "[]"
         meta_options["form_actions"] = json.loads(form_actions.replace("'", '"'))
-        meta_options["form_parameters"] = getattr(self.instance, "action_parameters", {})
+        meta_options["form_parameters"] = getattr(
+            self.instance, "action_parameters", {}
+        )
 
-        fields["Meta"] = type("Meta", (), dict(
-            options=meta_options,
-            verbose_name=self.instance.form_name.replace("-", " ").replace("_", " ").capitalize(),
-        ))  # Meta class with options and verbose name
+        fields["Meta"] = type(
+            "Meta",
+            (),
+            dict(
+                options=meta_options,
+                verbose_name=self.instance.form_name.replace("-", " ")
+                .replace("_", " ")
+                .capitalize(),
+            ),
+        )  # Meta class with options and verbose name
 
         return type(
             "FrontendAutoForm",
