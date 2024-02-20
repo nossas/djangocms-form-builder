@@ -73,6 +73,13 @@ class Form(CMSPlugin):
         null=True,
     )
 
+    extra_config = models.JSONField(
+        default=dict,
+        encoder=DjangoJSONEncoder,
+        blank=True,
+        null=True,
+    )
+
     attributes = AttributesField()
 
     captcha_widget = models.CharField(
