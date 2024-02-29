@@ -104,16 +104,20 @@ class AjaxFormMixin(FormMixin):
                 "",
                 "",
             )
+
+        # Insert redirect on response if value exists
+        response = {
+            "result": result,
+            "errors": errors,
+            "field_errors": {},
+            "content": content,
+        }
+
         redirect = redirect or redir
-        return JsonResponse(
-            {
-                "result": result,
-                "redirect": redirect,
-                "errors": errors,
-                "field_errors": {},
-                "content": content,
-            }
-        )
+        if redirect or not hasattr(self.instance, "render_success"):
+            response["redirect"] = redirect
+
+        return JsonResponse(response)
 
     def form_invalid(self, form):
         return JsonResponse(
@@ -382,9 +386,15 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
         if self.instance.form_floating_labels:
             meta_options["floating_labels"] = True
         meta_options["field_sep"] = f"{self.instance.form_spacing}"
-        meta_options["redirect"] = (
-            self.instance.placeholder.page
-        )  # Default behavior: redirect to same page
+
+        # Check render_success to use custom success menssages
+        if hasattr(self.instance, "render_success"):
+            meta_options["render_success"] = self.instance.render_success
+        else:
+            meta_options["redirect"] = (
+                self.instance.placeholder.page
+            )  # Default behavior: redirect to same page
+
         meta_options["login_required"] = self.instance.form_login_required
         meta_options["unique"] = self.instance.form_unique
         form_actions = self.instance.form_actions or "[]"

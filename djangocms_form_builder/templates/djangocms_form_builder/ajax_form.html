@@ -27,7 +27,6 @@
     <script>
         function djangocms_form_builder_form(form) {
             function feedback(node, data) {
-                console.log(data);
                 if (data.result === 'success') {
                     node.outerHTML = data.content;
                     node.style.transition='';
@@ -95,11 +94,13 @@
                 } else if (data.result === 'error') {
                     alert(data.errors[0]);
                 }
+                // redirect field remove from data in cms plugin
                 if ('redirect' in data) {
                     if (data.redirect !== '' && data.redirect !== 'result') {
                         window.location.href = data.redirect;
-                    } else
+                    } else {
                         window.location.reload();
+                    }
                 }
             }
 

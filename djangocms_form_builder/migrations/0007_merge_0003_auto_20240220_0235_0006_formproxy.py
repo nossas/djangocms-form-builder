@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('djangocms_form_builder', '0003_auto_20240220_0235'),
+        ('djangocms_form_builder', '0003_auto_20230129_1950'),
         ('djangocms_form_builder', '0006_formproxy'),
     ]
 
