@@ -1,7 +1,7 @@
 default_attr = dict(
     input="form-control",
     label="form-label",
-    div="",
+    div="form-group",
     group="",
 )
 
