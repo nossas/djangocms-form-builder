@@ -20,6 +20,8 @@ MAIL_TEMPLATE_SETS = getattr(django_settings, "DJANGOCMS_MAIL_TEMPLATE_SETS", (
 framework = getattr(django_settings, "DJANGOCMS_FRONTEND_FRAMEWORK", "bootstrap5")
 theme = getattr(django_settings, "DJANGOCMS_FRONTEND_THEME", "djangocms_frontend")
 
+REQUIRED_CSS_CLASS = getattr(django_settings, "DJANGOCMS_FORMS_REQUIRED_CSS_CLASS", "")
+
 FORM_PLUGIN_CHILD_CLASSES = [
     "BooleanFieldPlugin",
     "CharFieldPlugin",

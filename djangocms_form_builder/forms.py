@@ -28,6 +28,7 @@ def mixin_factory(x):
 
 class SimpleFrontendForm(forms.Form):
     takes_request = True
+    required_css_class = settings.REQUIRED_CSS_CLASS
 
     def __init__(self, *args, **kwargs):
         self._request = kwargs.pop("request")
