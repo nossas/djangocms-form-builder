@@ -14,7 +14,7 @@ from sekizai.context import SekizaiContext
 
 from djangocms_form_builder import settings
 
-from .. import forms, models, recaptcha
+from .. import forms, models, recaptcha, settings
 from ..actions import ActionMixin
 from ..forms import SimpleFrontendForm
 from ..helpers import get_option, insert_fields, mark_safe_lazy
@@ -262,20 +262,7 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
     render_template = f"djangocms_form_builder/{settings.framework}/form.html"
     change_form_template = "djangocms_frontend/admin/base.html"
     allow_children = True
-    child_classes = [
-        "BooleanFieldPlugin",
-        "CharFieldPlugin",
-        "ChoicePlugin",
-        "DateFieldPlugin",
-        "DateTimeFieldPlugin",
-        "DecimalFieldPlugin",
-        "EmailFieldPlugin",
-        "IntegerFieldPlugin",
-        "SelectPlugin",
-        "TextareaPlugin",
-        "TimeFieldPlugin",
-        "URLFieldPlugin",
-    ]
+    child_classes = settings.FORM_PLUGIN_CHILD_CLASSES
 
     fieldsets = [
         (
