@@ -263,6 +263,7 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
     change_form_template = "djangocms_frontend/admin/base.html"
     allow_children = True
     child_classes = settings.FORM_PLUGIN_CHILD_CLASSES
+    parent_classes = ["BlockPlugin", "ColumnPlugin"]
 
     fieldsets = [
         (
@@ -284,15 +285,15 @@ class FormPlugin(ActionMixin, CMSAjaxForm):
 
     cache_parent_classes = False
 
-    @classmethod
-    def get_parent_classes(cls, slot, page, instance=None):
-        """Only valid if not inside form"""
-        parent = instance
-        while parent is not None:
-            if parent.plugin_type == cls.__name__:
-                return [""]
-            parent = parent.parent
-        return super().get_parent_classes(slot, page, instance)
+    # @classmethod
+    # def get_parent_classes(cls, slot, page, instance=None):
+    #     """Only valid if not inside form"""
+    #     parent = instance
+    #     while parent is not None:
+    #         if parent.plugin_type == cls.__name__:
+    #             return [""]
+    #         parent = parent.parent
+    #     return super().get_parent_classes(slot, page, instance)
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
