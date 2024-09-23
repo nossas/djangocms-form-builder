@@ -57,7 +57,7 @@ def get_action_class(action):
 
 class ActionMixin:
     """Adds action form elements to Form plugin admin"""
-    def get_form(self, request, *args, **kwargs):
+    def get_form(self, request=None, *args, **kwargs):
         """Creates new form class based adding the actions as mixins"""
         return type(
             "FormActionAdminForm",
